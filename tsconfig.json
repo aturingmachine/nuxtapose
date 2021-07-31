@@ -1,0 +1,14 @@
+{
+  "include": ["src/**/*", "src/**/*.txt"],
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "lib": ["ESNext"],
+    "outDir": "dist",
+    "types": ["node"],
+    "forceConsistentCasingInFileNames": true
+  },
+}
