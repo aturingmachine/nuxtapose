@@ -20,12 +20,9 @@ export class Generator {
 
     this.command = CommandParser.parseCommand(passedCommand)
     this.target = CommandParser.parseTarget(rawTarget)
-
     this.outputDir = OutputDirs[this.target]
-
     this.pathBuilder = new PathBuilder(namePath, this.target, this.outputDir)
-
-    this.fileBuilder = new FileBuilder(name, this.target, this.outputDir)
+    this.fileBuilder = new FileBuilder(name, this.target)
 
     console.table({
       command: this.command,

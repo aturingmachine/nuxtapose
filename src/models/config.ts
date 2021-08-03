@@ -4,7 +4,7 @@ export enum TypeScriptComponentTypes {
 }
 
 export enum TypeScriptVuexTypes {
-  Module = 'module',
+  Module = 'modules',
   ClassBased = 'class-based',
 }
 

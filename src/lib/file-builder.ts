@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
-import path from 'path'
 import { getConfigValue, state } from '../config/config-holder'
-import { FileExtensions, OutputDirs, Target } from '../models'
+import { FileExtensions, Target } from '../models'
+import NuxtGenTemplates from '../templates'
 import { normalizeName } from './name-normalizer'
 
 interface NameCases {
@@ -21,12 +21,10 @@ const NameMatchers = {
 export class FileBuilder {
   private names!: NameCases
   private target!: Target
-  private outputDir!: string
 
-  constructor(name: string, target: Target, outputDir: string) {
+  constructor(name: string, target: Target) {
     const normalizedName = normalizeName(target, name)
 
-    this.outputDir = outputDir
     this.target = target
 
     this.names = {
@@ -38,7 +36,7 @@ export class FileBuilder {
   }
 
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
-    const files = await this.inject()
+    const files = this.inject()
 
     await fs.writeFile(`${newPath}${extension}`, files.impl, {
       encoding: 'utf-8',
@@ -53,21 +51,13 @@ export class FileBuilder {
     )
   }
 
-  private async inject(): Promise<{ impl: string; spec: string }> {
-    const basePath = path.resolve(
-      __dirname,
-      '../templates/',
-      state.isTs ? 'ts' : 'js',
-      this.outputDir,
-      `${getConfigValue(this.target.toLowerCase())}.json`
-    )
-    const values = JSON.parse(
-      await fs.readFile(basePath, { encoding: 'utf-8' })
-    )
+  private inject(): { impl: string; spec: string } {
+    const template =
+      NuxtGenTemplates[this.target][getConfigValue(this.target.toLowerCase())]
 
     return {
-      impl: this.replaceAll(values.impl),
-      spec: this.replaceAll(values.spec),
+      impl: this.replaceAll(template.implementation),
+      spec: this.replaceAll(template.spec),
     }
   }
 
