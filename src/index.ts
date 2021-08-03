@@ -5,10 +5,8 @@ import chalk from 'chalk'
 
 async function main(): Promise<void> {
   const config = await getConfig()
-  console.log(config)
 
   if (!config.component || !config.vuex) {
-    console.log(chalk.blue('No config found. Opening Config Wizard...'))
     const newConfig = await configMenu()
     await writeConfig(newConfig)
   }
@@ -18,9 +16,8 @@ async function main(): Promise<void> {
   const target = args[1]
   const name = args[2]
 
-  // console.log(passedCommand, target)
   const generator = new Generator(passedCommand, target, name)
-  generator.checkForNuxt()
+  await generator.checkForNuxt()
 
   await generator.generateFiles()
 }

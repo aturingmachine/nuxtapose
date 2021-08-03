@@ -1,8 +1,10 @@
+import { Target } from '../models'
+
 const Commands: Record<string, string[]> = {
   Generate: ['generate', 'g'],
 }
 
-const Targets: Record<string, string[]> = {
+const TargetCommands: Record<Target, string[]> = {
   Component: ['component', 'c'],
   Service: ['service', 's'],
   Middleware: ['middleware', 'm'],
@@ -14,8 +16,8 @@ const Targets: Record<string, string[]> = {
 }
 
 export class CommandParser {
-  static parseTarget(arg: string): string {
-    const target = Object.entries(Targets)
+  static parseTarget(arg: string): Target {
+    const target = Object.entries(TargetCommands)
       .filter(([_target, matchers]) => matchers.includes(arg))
       .map(([target, _matchers]) => target)
       .pop()
@@ -26,7 +28,7 @@ export class CommandParser {
       )
     }
 
-    return target
+    return target as Target
   }
 
   static parseCommand(arg: string): string {

@@ -9,6 +9,7 @@
     "lib": ["ESNext"],
     "outDir": "dist",
     "types": ["node"],
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
 }

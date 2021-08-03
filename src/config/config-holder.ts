@@ -1,6 +1,6 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { Config } from '../models/config'
+import { Config, State } from '../models/config'
 
 let config: Config = {}
 
@@ -8,7 +8,7 @@ export async function getConfig(): Promise<Config> {
   if (!Object.keys(config).length) {
     try {
       config = JSON.parse(
-        await fs.readFile(path.resolve(process.cwd(), '.nuxtgenrc'), {
+        await fs.readFile(path.resolve(process.cwd(), '.nuxtgenrc.json'), {
           encoding: 'utf-8',
         })
       )
@@ -29,7 +29,9 @@ export async function writeConfig(newConfig: Config): Promise<void> {
 }
 
 export function getConfigValue(key: string): string {
-  console.log('>>>>>>>>>>>>>KEY', key)
-  console.log('>>>>>>>>>>>>>CONFIG', config)
   return config[key as keyof Config] || ''
+}
+
+export const state: State = {
+  isTs: false,
 }

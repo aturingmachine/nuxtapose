@@ -1,6 +1,8 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { getConfigValue } from '../config/config-holder'
+import { getConfigValue, state } from '../config/config-holder'
+import { FileExtensions, OutputDirs, Target } from '../models'
+import { normalizeName } from './name-normalizer'
 
 interface NameCases {
   pascal: string
@@ -18,62 +20,70 @@ const NameMatchers = {
 
 export class FileBuilder {
   private names!: NameCases
+  private target!: Target
+  private outputDir!: string
 
-  constructor(name: string) {
+  constructor(name: string, target: Target, outputDir: string) {
+    const normalizedName = normalizeName(target, name)
+
+    this.outputDir = outputDir
+    this.target = target
+
     this.names = {
-      pascal: getPascalCase(name),
-      kebab: name,
-      sentence: getSentenceCase(name),
-      raw: name,
+      pascal: getPascalCase(normalizedName),
+      kebab: normalizedName, // TODO need to turn other cases into kebab
+      sentence: getSentenceCase(normalizedName),
+      raw: normalizedName,
     }
-    // console.log(this.names)
   }
 
-  async inject(
-    isTs: boolean,
-    outputDir: string,
-    target: string
-  ): Promise<{ impl: string; spec: string }> {
-    console.log(target)
-    // console.log('>>>>>>>', getConfigValue(target.toLowerCase()))
+  async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
+    const files = await this.inject()
+
+    await fs.writeFile(`${newPath}${extension}`, files.impl, {
+      encoding: 'utf-8',
+    })
+
+    await fs.writeFile(
+      `${newPath}.spec${state.isTs ? '.ts' : '.js'}`,
+      files.spec,
+      {
+        encoding: 'utf-8',
+      }
+    )
+  }
+
+  private async inject(): Promise<{ impl: string; spec: string }> {
     const basePath = path.resolve(
       __dirname,
       '../templates/',
-      isTs ? 'ts' : 'js',
-      outputDir,
-      `${getConfigValue(target.toLowerCase())}.json`
+      state.isTs ? 'ts' : 'js',
+      this.outputDir,
+      `${getConfigValue(this.target.toLowerCase())}.json`
     )
     const values = JSON.parse(
       await fs.readFile(basePath, { encoding: 'utf-8' })
     )
-    // const baseFile = await fs.readFile(
-    //   path.resolve(
-    //     __dirname,
-    //     `../docs/${outputDir}/${getConfigValue(target.toLowerCase())}/impl.txt`
-    //   ),
-    //   { encoding: 'utf-8' }
-    // )
-    // const specBaseFile = await fs.readFile(
-    //   path.resolve(
-    //     __dirname,
-    //     `../docs/${outputDir}/${getConfigValue(target.toLowerCase())}/spec.txt`
-    //   ),
-    //   { encoding: 'utf-8' }
-    // )
 
-    const impl = values.impl
-      .replaceAll(NameMatchers.pascal, this.names.pascal)
-      .replaceAll(NameMatchers.kebab, this.names.kebab)
-      .replaceAll(NameMatchers.sentence, this.names.sentence)
-      .replaceAll(NameMatchers.raw, this.names.raw)
-    const spec = values.spec
-      .replaceAll(NameMatchers.pascal, this.names.pascal)
-      .replaceAll(NameMatchers.kebab, this.names.kebab)
-      .replaceAll(NameMatchers.sentence, this.names.sentence)
-      .replaceAll(NameMatchers.raw, this.names.raw)
+    return {
+      impl: this.replaceAll(values.impl),
+      spec: this.replaceAll(values.spec),
+    }
+  }
 
-    // console.log(impl, spec)
-    return { impl, spec }
+  private get replaceMap(): string[][] {
+    return [
+      [NameMatchers.pascal, this.names.pascal],
+      [NameMatchers.kebab, this.names.kebab],
+      [NameMatchers.sentence, this.names.sentence],
+      [NameMatchers.raw, this.names.raw],
+    ]
+  }
+
+  private replaceAll(contents: string): string {
+    return this.replaceMap.reduce((prev, curr) => {
+      return prev.replaceAll(curr[0], curr[1])
+    }, contents)
   }
 }
 

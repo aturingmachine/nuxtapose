@@ -1,122 +1,69 @@
 import fs from 'fs/promises'
-import path from 'path'
+import { state } from '../config/config-holder'
+import { OutputDirs, Target } from '../models'
 import { CommandParser } from './command-parser'
 import { FileBuilder } from './file-builder'
-
-const OutputDirs: Record<string, string> = {
-  Component: 'components',
-  Service: 'services',
-  Middleware: 'middleware',
-  ServerMiddleware: 'server-middleware',
-  Page: 'pages',
-  Layout: 'layouts',
-  Vuex: 'store',
-  Module: 'store/modules',
-}
+import { PathBuilder } from './path-builder'
 
 export class Generator {
-  private isTs!: boolean
-  private currentDir!: string
-  private target!: string | undefined
+  private target!: Target | undefined
   private command!: string | undefined
-  private name!: string
-  private namePath!: string
   private outputDir!: string
+  private pathBuilder!: PathBuilder
   private fileBuilder!: FileBuilder
 
-  constructor(passedCommand: string, target: string, namePath: string) {
-    this.name = namePath
+  constructor(passedCommand: string, rawTarget: string, namePath: string) {
+    const name = namePath
       .split('/')
       .reverse()
       .filter((x) => x.length > 0)[0]
 
-    console.log('name', this.name)
-    this.namePath = namePath
-    this.currentDir = process.cwd()
     this.command = CommandParser.parseCommand(passedCommand)
-    this.target = CommandParser.parseTarget(target)
+    this.target = CommandParser.parseTarget(rawTarget)
+
     this.outputDir = OutputDirs[this.target]
 
-    this.fileBuilder = new FileBuilder(this.name)
+    this.pathBuilder = new PathBuilder(namePath, this.target, this.outputDir)
+
+    this.fileBuilder = new FileBuilder(name, this.target, this.outputDir)
 
     console.table({
       command: this.command,
       target: this.target,
       outputDir: this.outputDir,
       namePath,
-      name: this.name,
+      name: name,
     })
   }
 
   async checkForNuxt(): Promise<void> {
-    const dirEnts = await fs.readdir(this.currentDir, { withFileTypes: true })
+    const dirEnts = await fs.readdir(process.cwd(), { withFileTypes: true })
 
     const hasNuxtConfig = dirEnts.some((dirEnt) => {
       if (dirEnt.name === 'nuxt.config.ts') {
-        this.isTs = true
+        state.isTs = true
         return true
       }
 
-      if (dirEnt.name === 'nuxt.config.ts') {
-        this.isTs = false
+      if (dirEnt.name === 'nuxt.config.js') {
+        state.isTs = false
         return true
       }
 
       return false
     })
 
-    console.log(hasNuxtConfig, this.isTs)
-
     if (!hasNuxtConfig) {
       throw new Error('nuxt-gen must be run in a directory with a Nuxt project')
     }
   }
 
-  async getFileContents(): Promise<{ impl: string; spec: string }> {
-    const files = await this.fileBuilder.inject(
-      true, // TODO use real ts val, or come up with override somehow
-      this.outputDir,
-      this.target || ''
-    )
-
-    return files
-  }
-
   async generateFiles(): Promise<void> {
-    const extenstion = ['Component', 'Page', 'Layout'].includes(
-      this.target || ''
-    )
-      ? // TODO make this more robust
-        '.vue'
-      : '.ts'
+    await this.pathBuilder.buildPath()
 
-    const shouldMakeBottomDir = this.namePath.endsWith('/')
-
-    const newPath = path.resolve(
-      process.cwd(),
-      path.join(
-        this.outputDir,
-        this.namePath,
-        shouldMakeBottomDir ? `/${this.name}` : ''
-      )
-    )
-
-    const files = await this.getFileContents()
-
-    await this.buildPath()
-
-    await fs.writeFile(newPath + extenstion, files.impl, { encoding: 'utf-8' })
-    await fs.writeFile(newPath + '.spec.ts', files.spec, { encoding: 'utf-8' })
-  }
-
-  private async buildPath(): Promise<void> {
-    // make final dir if namepath ends in / ?
-    const bottomDir = this.namePath.split('/').slice(0, -1).join('/')
-    console.log(bottomDir)
-
-    await fs.mkdir(
-      path.resolve(process.cwd(), `${this.outputDir}/${bottomDir}`),
-      { recursive: true }
+    await this.fileBuilder.writeFiles(
+      this.pathBuilder.path,
+      this.pathBuilder.extension
     )
   }
 }
