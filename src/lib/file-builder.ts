@@ -1,7 +1,7 @@
 import fs from 'fs/promises'
 import { getConfigValue, state } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
-import NuxtGenTemplates from '../templates'
+import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
 import { normalizeName } from './name-normalizer'
 
 interface NameCases {
@@ -38,25 +38,33 @@ export class FileBuilder {
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
     const files = this.inject()
 
-    await fs.writeFile(`${newPath}${extension}`, files.impl, {
-      encoding: 'utf-8',
-    })
+    await Promise.all(
+      Object.entries(files.implementation).map(([fileName, source]) =>
+        fs.writeFile(`${newPath}/${fileName}${extension}`, source, {
+          encoding: 'utf-8',
+        })
+      )
+    )
 
-    await fs.writeFile(
-      `${newPath}.spec${state.isTs ? '.ts' : '.js'}`,
-      files.spec,
-      {
-        encoding: 'utf-8',
-      }
+    await Promise.all(
+      Object.entries(files.spec).map(([fileName, source]) =>
+        fs.writeFile(
+          `${newPath}/${fileName}.spec${state.isTs ? '.ts' : '.js'}`,
+          source,
+          {
+            encoding: 'utf-8',
+          }
+        )
+      )
     )
   }
 
-  private inject(): { impl: string; spec: string } {
+  private inject(): Source {
     const template =
       NuxtGenTemplates[this.target][getConfigValue(this.target.toLowerCase())]
 
     return {
-      impl: this.replaceAll(template.implementation),
+      implementation: this.replaceAll(template.implementation),
       spec: this.replaceAll(template.spec),
     }
   }
@@ -70,10 +78,17 @@ export class FileBuilder {
     ]
   }
 
-  private replaceAll(contents: string): string {
-    return this.replaceMap.reduce((prev, curr) => {
-      return prev.replaceAll(curr[0], curr[1])
-    }, contents)
+  private replaceAll(contents: SourceFiles): SourceFiles {
+    return Object.fromEntries(
+      Object.entries(contents).map(([fileName, sourceCode]) => {
+        return [
+          fileName.replaceAll(NameMatchers.kebab, this.names.kebab),
+          this.replaceMap.reduce((prev, curr) => {
+            return prev.replaceAll(curr[0], curr[1])
+          }, sourceCode),
+        ]
+      })
+    )
   }
 }
 

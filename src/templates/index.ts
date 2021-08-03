@@ -2,9 +2,13 @@ import { Target } from '../models'
 import ComponentTemplates from './components'
 import StoreTemplates from './store'
 
-interface Source {
-  implementation: string
-  spec: string
+export type SourceFiles = {
+  [key: string]: string
+}
+
+export interface Source {
+  implementation: SourceFiles
+  spec: SourceFiles
 }
 
 export interface Templates {

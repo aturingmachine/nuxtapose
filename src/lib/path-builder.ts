@@ -9,6 +9,7 @@ export class PathBuilder {
   private target!: Target
   private outputDir!: string
 
+  // TODO were no longer using this now, I dont think that is a problem?
   private normalizedName!: string
 
   constructor(namePath: string, target: Target, outputDir: string) {
@@ -28,15 +29,13 @@ export class PathBuilder {
   get path(): string {
     return path.resolve(
       process.cwd(),
-      path.join(this.outputDir, this.namePath, this.finalSegment)
+      path.join(this.outputDir, this.bottomDir)
     )
   }
 
   async buildPath(): Promise<void> {
-    const bottomDir = this.namePath.split('/').slice(0, -1).join('/')
-
     await fs.mkdir(
-      path.resolve(process.cwd(), `${this.outputDir}/${bottomDir}`),
+      path.resolve(process.cwd(), `${this.outputDir}/${this.bottomDir}`),
       { recursive: true }
     )
   }
@@ -49,7 +48,7 @@ export class PathBuilder {
     return state.isTs ? FileExtensions.Typescript : FileExtensions.Javascript
   }
 
-  private get finalSegment(): string {
-    return this.namePath.endsWith('/') ? `/${this.normalizedName}` : ''
+  private get bottomDir(): string {
+    return this.namePath.split('/').slice(0, -1).join('/')
   }
 }
