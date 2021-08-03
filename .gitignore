@@ -2,6 +2,7 @@ node_modules
 dist
 test.js
 nuxt.config.ts
+.nuxtgenrc.json
 
 # command output dirs
 components

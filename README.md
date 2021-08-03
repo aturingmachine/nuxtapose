@@ -1,4 +1,4 @@
-# Nuxt-Gen
+# nuxt-gen
 
 > cli to generate templated nuxt files
 
