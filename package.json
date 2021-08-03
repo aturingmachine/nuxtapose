@@ -8,6 +8,7 @@
     "copy-templates": "cp -r src/templates dist/",
     "build": "tsc && npm run copy-templates",
     "dev": "npm run build && node dist/index.js",
+    "lint": "eslint --max-warnings 0 'src/**'",
     "prepublishOnly": "npm run build"
   },
   "author": "",
