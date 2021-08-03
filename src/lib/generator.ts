@@ -7,7 +7,6 @@ import { PathBuilder } from './path-builder'
 
 export class Generator {
   private target!: Target | undefined
-  private command!: string | undefined
   private outputDir!: string
   private pathBuilder!: PathBuilder
   private fileBuilder!: FileBuilder
@@ -18,19 +17,11 @@ export class Generator {
       .reverse()
       .filter((x) => x.length > 0)[0]
 
-    this.command = CommandParser.parseCommand(passedCommand)
+    CommandParser.parseCommand(passedCommand)
     this.target = CommandParser.parseTarget(rawTarget)
     this.outputDir = OutputDirs[this.target]
     this.pathBuilder = new PathBuilder(namePath, this.target, this.outputDir)
     this.fileBuilder = new FileBuilder(name, this.target)
-
-    console.table({
-      command: this.command,
-      target: this.target,
-      outputDir: this.outputDir,
-      namePath,
-      name: name,
-    })
   }
 
   async checkForNuxt(): Promise<void> {

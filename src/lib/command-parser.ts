@@ -4,7 +4,7 @@ const Commands: Record<string, string[]> = {
   Generate: ['generate', 'g'],
 }
 
-const TargetCommands: Record<Target, string[]> = {
+const TargetOptions: Record<Target, string[]> = {
   Component: ['component', 'c'],
   Service: ['service', 's'],
   Middleware: ['middleware', 'm'],
@@ -17,7 +17,7 @@ const TargetCommands: Record<Target, string[]> = {
 
 export class CommandParser {
   static parseTarget(arg: string): Target {
-    const target = Object.entries(TargetCommands)
+    const target = Object.entries(TargetOptions)
       .filter(([_target, matchers]) => matchers.includes(arg))
       .map(([target, _matchers]) => target)
       .pop()
@@ -31,7 +31,7 @@ export class CommandParser {
     return target as Target
   }
 
-  static parseCommand(arg: string): string {
+  static parseCommand(arg: string): void {
     const command = Object.entries(Commands)
       .filter(([_command, matchers]) => matchers.includes(arg))
       .map(([command, _matchers]) => command)
@@ -42,7 +42,5 @@ export class CommandParser {
         `${arg} is not a valid command for nuxt-gen. Run nuxtgen help to see available commands.`
       )
     }
-
-    return command
   }
 }

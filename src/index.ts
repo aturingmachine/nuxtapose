@@ -1,9 +1,14 @@
+#!/usr/bin/env node
+
+import figlet from 'figlet'
 import { Generator } from './lib/generator'
 import { getConfig, writeConfig } from './config/config-holder'
 import { configMenu } from './config/config-menu'
 import chalk from 'chalk'
 
 async function main(): Promise<void> {
+  console.log(chalk.blueBright(figlet.textSync('nuxt-gen', 'Rounded')), '\n')
+
   const config = await getConfig()
 
   if (!config.component || !config.vuex) {

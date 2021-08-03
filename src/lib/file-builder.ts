@@ -3,6 +3,9 @@ import { getConfigValue, state } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
 import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
 import { normalizeName } from './name-normalizer'
+import chalk from 'chalk'
+import path from 'path'
+import { Logger } from '../utils/log'
 
 interface NameCases {
   pascal: string
@@ -38,16 +41,25 @@ export class FileBuilder {
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
     const files = this.inject()
 
+    Logger.yellow('Creating Implementation Files:')
+    const relativePath = path.relative(process.cwd(), newPath)
     await Promise.all(
-      Object.entries(files.implementation).map(([fileName, source]) =>
-        fs.writeFile(`${newPath}/${fileName}${extension}`, source, {
+      Object.entries(files.implementation).map(([fileName, source]) => {
+        Logger.yellow(` > ${relativePath}/${fileName}${extension}`)
+        return fs.writeFile(`${newPath}/${fileName}${extension}`, source, {
           encoding: 'utf-8',
         })
-      )
+      })
     )
+    Logger.green('Implementation Files Generated\n')
 
+    Logger.yellow('Creating Spec Files:')
     await Promise.all(
-      Object.entries(files.spec).map(([fileName, source]) =>
+      Object.entries(files.spec).map(([fileName, source]) => {
+        Logger.yellow(
+          ` > ${relativePath}/${fileName}.spec${state.isTs ? '.ts' : '.js'}`
+        )
+
         fs.writeFile(
           `${newPath}/${fileName}.spec${state.isTs ? '.ts' : '.js'}`,
           source,
@@ -55,8 +67,9 @@ export class FileBuilder {
             encoding: 'utf-8',
           }
         )
-      )
+      })
     )
+    Logger.green('Spec Files Generated.')
   }
 
   private inject(): Source {
