@@ -3,7 +3,6 @@ import { getConfigValue, state } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
 import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
 import { normalizeName } from './name-normalizer'
-import chalk from 'chalk'
 import path from 'path'
 import { Logger } from '../utils/log'
 

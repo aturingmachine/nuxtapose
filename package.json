@@ -1,14 +1,14 @@
 {
   "name": "nuxt-gen",
-  "version": "0.0.1",
+  "version": "0.0.1-beta.0",
   "description": "Generate Files For Nuxt Projects",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "scripts": {
     "copy-templates": "cp -r src/templates dist/",
     "build": "tsc && npm run copy-templates",
-    "dev": "npm run build && rm -rf components && node dist/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "npm run build && node dist/index.js",
+    "prepublishOnly": "npm run build"
   },
   "author": "",
   "license": "MIT",
