@@ -3,6 +3,7 @@ import { state } from '../config/config-holder'
 import { OutputDirs, Target } from '../models'
 import { CommandParser } from './command-parser'
 import { FileBuilder } from './file-builder'
+import { Name } from './name-normalizer'
 import { PathBuilder } from './path-builder'
 
 export class Generator {
@@ -19,6 +20,7 @@ export class Generator {
 
     CommandParser.parseCommand(passedCommand)
     this.target = CommandParser.parseTarget(rawTarget)
+    Name.init(name, this.target)
     this.outputDir = OutputDirs[this.target]
     this.pathBuilder = new PathBuilder(namePath, this.target, this.outputDir)
     this.fileBuilder = new FileBuilder(name, this.target)

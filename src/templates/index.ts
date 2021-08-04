@@ -1,6 +1,8 @@
 import { Target } from '../models'
 import ComponentTemplates from './components'
+import LayoutTemplates from './layouts'
 import StoreTemplates from './store'
+import StoreModulesTemplate from './store-modules'
 
 export type SourceFiles = {
   [key: string]: string
@@ -26,8 +28,8 @@ const NuxtGenTemplates: NuxtGenTemplates = {
   Middleware: StoreTemplates,
   ServerMiddleware: StoreTemplates,
   Page: StoreTemplates,
-  Layout: StoreTemplates,
-  Module: StoreTemplates,
+  Layout: LayoutTemplates,
+  Module: StoreModulesTemplate,
 }
 
 export default NuxtGenTemplates

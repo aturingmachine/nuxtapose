@@ -1,6 +1,10 @@
 import inquirer from 'inquirer'
 import { Config } from '../models/config'
 
+const configConstants = {
+  module: 'modules',
+}
+
 export async function configMenu(): Promise<Config> {
   const componentType = await inquirer.prompt({
     type: 'list',
@@ -34,5 +38,5 @@ export async function configMenu(): Promise<Config> {
     ],
   })
 
-  return { ...componentType, ...vuexType } as Config
+  return { ...componentType, ...vuexType, ...configConstants } as Config
 }

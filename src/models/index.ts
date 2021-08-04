@@ -23,5 +23,5 @@ export const OutputDirs: Record<Target, string> = {
   Page: 'pages',
   Layout: 'layouts',
   Vuex: 'store',
-  Module: 'store/modules',
+  Module: 'store',
 }

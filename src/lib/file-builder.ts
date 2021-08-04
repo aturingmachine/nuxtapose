@@ -26,6 +26,7 @@ export class FileBuilder {
 
   constructor(name: string, target: Target) {
     const normalizedName = normalizeName(target, name)
+    console.log(normalizedName)
 
     this.target = target
 
@@ -72,6 +73,7 @@ export class FileBuilder {
   }
 
   private inject(): Source {
+    console.log(this.target)
     const template =
       NuxtGenTemplates[this.target][getConfigValue(this.target.toLowerCase())]
 

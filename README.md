@@ -1,17 +1,33 @@
 # nuxt-gen
 
+_nuxt-gen is in beta_
+
 > cli to generate templated nuxt files
 
-- Planning to Support both Typescript and JavaScript
-  - Typescript will be first since I use it and can test easily
-- Planning to support generation for at least:
-  - components
-  - services
-  - middleware
-  - server-middleware
-  - pages
-  - layouts
-  - store
-- Support options for templates i.e.
-  - Class based Vue Components
-  - Options based Vue components
+## Supported Templates
+
+### Components
+
+#### Typescript
+
+##### Class Based
+
+Class based components using `nuxt-property-decorator`
+
+##### Options API
+
+Options API using `Vue.extend`
+
+### Vuex Stores
+
+#### Typescript
+
+##### Modules Based
+
+Simple Vuex Store using `GetterTree`, `MutationTree`, and `ActionTree`
+
+### Vuex Modules
+
+### Typescript
+
+Vuex Store Module placed in its own subdirectory and broken up into separate files. The Modules pattern currently only supports output using `GetterTree`, `MutationTree`, and `ActionTree`.

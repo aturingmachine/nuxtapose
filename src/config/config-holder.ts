@@ -2,6 +2,11 @@ import fs from 'fs/promises'
 import path from 'path'
 import { Config, State } from '../models/config'
 
+const configAliases = {
+  layout: 'component',
+  page: 'component',
+}
+
 let config: Config = {}
 
 export async function getConfig(): Promise<Config> {
@@ -22,14 +27,15 @@ export async function getConfig(): Promise<Config> {
 
 export async function writeConfig(newConfig: Config): Promise<void> {
   await fs.writeFile(
-    path.resolve(process.cwd(), '.nuxtgenrc'),
+    path.resolve(process.cwd(), '.nuxtgenrc.json'),
     JSON.stringify(newConfig, undefined, 2)
   )
   config = newConfig
 }
 
 export function getConfigValue(key: string): string {
-  return config[key as keyof Config] || ''
+  const parsedKey = configAliases[key as keyof typeof configAliases] || key
+  return config[parsedKey as keyof Config] || ''
 }
 
 export const state: State = {

@@ -1,5 +1,4 @@
 import { FileExtensions, Target } from '../models'
-import { normalizeName } from './name-normalizer'
 import fs from 'fs/promises'
 import path from 'path'
 import { state } from '../config/config-holder'
@@ -9,21 +8,10 @@ export class PathBuilder {
   private target!: Target
   private outputDir!: string
 
-  // TODO were no longer using this now, I dont think that is a problem?
-  private normalizedName!: string
-
   constructor(namePath: string, target: Target, outputDir: string) {
     this.namePath = namePath
     this.target = target
     this.outputDir = outputDir
-
-    this.normalizedName = normalizeName(
-      target,
-      namePath
-        .split('/')
-        .reverse()
-        .filter((x) => x.length > 0)[0]
-    )
   }
 
   get path(): string {
@@ -49,6 +37,14 @@ export class PathBuilder {
   }
 
   private get bottomDir(): string {
+    if (this.forceBottomDir) {
+      return path.normalize(this.namePath + '/')
+    }
+
     return this.namePath.split('/').slice(0, -1).join('/')
+  }
+
+  private get forceBottomDir(): boolean {
+    return [Target.Module].includes(this.target)
   }
 }

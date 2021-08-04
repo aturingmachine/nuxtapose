@@ -36,14 +36,49 @@ const NameRules: Record<Target, NameRule> = {
   },
   Module: {
     suffix: '',
-    remove: ['store'],
+    remove: ['store', 'module'],
   },
 }
 
 export function normalizeName(target: Target, name: string): string {
+  console.log('>>>', target)
   const rules = NameRules[target]
+  console.log(rules)
   rules.remove.forEach((removalWord) => name.replaceAll(removalWord, ''))
-  name.concat(rules.suffix)
+  return name.concat(rules.suffix)
+}
 
-  return name
+export class Name {
+  private static filename: string
+  private static rules: NameRule
+
+  static init(name: string, target: Target): void {
+    Name.filename = name
+    Name.rules = NameRules[target]
+  }
+
+  static withSuffix(): string {
+    return Name.addSuffix(Name.filename)
+  }
+
+  static clean(): string {
+    return Name.removeBannedStrings(Name.filename)
+  }
+
+  static normalized(): string {
+    return Name.addSuffix(Name.clean())
+  }
+
+  private static addSuffix(source: string): string {
+    return source.concat(Name.rules.suffix)
+  }
+
+  private static removeBannedStrings(source: string): string {
+    let s = source
+    Name.rules.remove.forEach(
+      (removalWord) => (s = s.replaceAll(removalWord, ''))
+    )
+
+    return s
+  }
 }

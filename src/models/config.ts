@@ -8,9 +8,14 @@ export enum TypeScriptVuexTypes {
   ClassBased = 'class-based',
 }
 
+export enum TypescriptVuexModuleTypes {
+  Module = 'modules',
+}
+
 export interface Config {
   component?: TypeScriptComponentTypes
   vuex?: TypeScriptVuexTypes
+  module?: TypescriptVuexModuleTypes
 }
 
 export type State = {
