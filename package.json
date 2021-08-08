@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc && node dist/index.js",
-    "lint": "eslint --max-warnings 0 'src/**'",
+    "lint": "eslint --fix --max-warnings 0 'src/**'",
     "prepublishOnly": "npm run build"
   },
   "author": "",

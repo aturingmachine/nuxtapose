@@ -50,9 +50,13 @@ export class FileBuilder {
     const relativePath = path.relative(process.cwd(), newPath)
     await Promise.all(
       Object.entries(files.implementation).map(async ([fileName, source]) => {
-        const fullName = `${fileName}${extension}`
-        const path = `${newPath}/${fileName}${extension}`
-        const friendlyPath = `${relativePath}/${fileName}${extension}`
+        const fullName = `${
+          this.target === Target.Page && newPath.includes(fileName)
+            ? 'index'
+            : fileName
+        }${extension}`
+        const path = `${newPath}/${fullName}`
+        const friendlyPath = `${relativePath}/${fullName}`
 
         return await this.writeFile(path, friendlyPath, source, fullName)
       })
