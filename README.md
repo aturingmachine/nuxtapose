@@ -31,7 +31,7 @@ nuxtapose can be configured via a `.nuxtaposerc.json` in the projects root direc
 
 ### Configuration Fields
 
-```json
+```js
 {
   // Required Configuration
   "component": "class-based | options-api",
