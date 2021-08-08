@@ -14,7 +14,8 @@ export interface Source {
 }
 
 export interface Templates {
-  [key: string]: Source
+  ts: { [key: string]: Source }
+  js: { [key: string]: Source }
 }
 
 type NuxtGenTemplates = {
@@ -27,7 +28,7 @@ const NuxtGenTemplates: NuxtGenTemplates = {
   Service: StoreTemplates,
   Middleware: StoreTemplates,
   ServerMiddleware: StoreTemplates,
-  Page: StoreTemplates,
+  Page: ComponentTemplates,
   Layout: LayoutTemplates,
   Module: StoreModulesTemplate,
 }

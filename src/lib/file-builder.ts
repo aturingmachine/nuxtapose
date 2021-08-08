@@ -1,10 +1,14 @@
 import fs from 'fs/promises'
-import { getConfigValue, state } from '../config/config-holder'
+import { getConfigValue } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
 import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
 import { normalizeName } from './name-normalizer'
 import path from 'path'
 import { Logger } from '../utils/log'
+import { yesNoPrompt } from '../utils/input-utils'
+import chalk from 'chalk'
+import { NuxtaposeEvent, NuxtaposeEventType } from './reporter'
+import { OptState } from '../config/opt-state'
 
 interface NameCases {
   pascal: string
@@ -26,7 +30,6 @@ export class FileBuilder {
 
   constructor(name: string, target: Target) {
     const normalizedName = normalizeName(target, name)
-    console.log(normalizedName)
 
     this.target = target
 
@@ -36,6 +39,8 @@ export class FileBuilder {
       sentence: getSentenceCase(normalizedName),
       raw: normalizedName,
     }
+
+    Logger.debug.blue(`FileBuilder initialized with name ${this.names.raw}`)
   }
 
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
@@ -44,38 +49,34 @@ export class FileBuilder {
     Logger.yellow('Creating Implementation Files:')
     const relativePath = path.relative(process.cwd(), newPath)
     await Promise.all(
-      Object.entries(files.implementation).map(([fileName, source]) => {
-        Logger.yellow(` > ${relativePath}/${fileName}${extension}`)
-        return fs.writeFile(`${newPath}/${fileName}${extension}`, source, {
-          encoding: 'utf-8',
-        })
+      Object.entries(files.implementation).map(async ([fileName, source]) => {
+        const fullName = `${fileName}${extension}`
+        const path = `${newPath}/${fileName}${extension}`
+        const friendlyPath = `${relativePath}/${fileName}${extension}`
+
+        return await this.writeFile(path, friendlyPath, source, fullName)
       })
     )
     Logger.green('Implementation Files Generated\n')
 
     Logger.yellow('Creating Spec Files:')
     await Promise.all(
-      Object.entries(files.spec).map(([fileName, source]) => {
-        Logger.yellow(
-          ` > ${relativePath}/${fileName}.spec${state.isTs ? '.ts' : '.js'}`
-        )
+      Object.entries(files.spec).map(async ([fileName, source]) => {
+        const fullFilename = `${fileName}.spec${OptState.isTs ? '.ts' : '.js'}`
+        const path = `${newPath}/${fullFilename}`
+        const friendlyPath = `${relativePath}/${fullFilename}`
 
-        fs.writeFile(
-          `${newPath}/${fileName}.spec${state.isTs ? '.ts' : '.js'}`,
-          source,
-          {
-            encoding: 'utf-8',
-          }
-        )
+        return await this.writeFile(path, friendlyPath, source, fullFilename)
       })
     )
     Logger.green('Spec Files Generated.')
   }
 
   private inject(): Source {
-    console.log(this.target)
     const template =
-      NuxtGenTemplates[this.target][getConfigValue(this.target.toLowerCase())]
+      NuxtGenTemplates[this.target][OptState.isTs ? 'ts' : 'js'][
+        getConfigValue(this.target.toLowerCase())
+      ]
 
     return {
       implementation: this.replaceAll(template.implementation),
@@ -103,6 +104,50 @@ export class FileBuilder {
         ]
       })
     )
+  }
+
+  private async writeFile(
+    fullPath: string,
+    friendlyPath: string,
+    source: string,
+    filename: string
+  ): Promise<void> {
+    const event = new NuxtaposeEvent(friendlyPath, filename, this.target)
+    Logger.blue(chalk.bold(` > ${friendlyPath}`))
+
+    try {
+      await fs.stat(fullPath)
+      event.type = NuxtaposeEventType.Overwrite
+
+      const overwrite =
+        OptState.canRunFreely ||
+        (await yesNoPrompt(`Overwrite existing file ${friendlyPath}?`))
+
+      if (overwrite) {
+        event.complete()
+
+        return fs.writeFile(fullPath, source, {
+          encoding: 'utf-8',
+        })
+      } else {
+        event.skip()
+        Logger.yellow(`Skipping ${friendlyPath}.`)
+      }
+    } catch (error) {
+      event.type = NuxtaposeEventType.Write
+      if (
+        OptState.canWrite ||
+        (await yesNoPrompt(`Write file ${friendlyPath}?`))
+      ) {
+        event.complete()
+        return fs.writeFile(fullPath, source, {
+          encoding: 'utf-8',
+        })
+      } else {
+        event.skip()
+        Logger.yellow(`Skipping ${friendlyPath}.`)
+      }
+    }
   }
 }
 

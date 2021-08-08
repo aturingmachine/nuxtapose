@@ -1,3 +1,15 @@
+export enum ReportLevels {
+  All = 'all',
+  CompletedOnly = 'completed-only',
+  None = 'none',
+}
+
+export enum ConfirmationType {
+  Never = 'never',
+  Overwrite = 'overwrite-only',
+  Always = 'always',
+}
+
 export enum TypeScriptComponentTypes {
   ClassBased = 'class-based',
   OptionsApi = 'options-api',
@@ -13,11 +25,15 @@ export enum TypescriptVuexModuleTypes {
 }
 
 export interface Config {
+  confirmChanges?: ConfirmationType
+  reportLevel?: ReportLevels
   component?: TypeScriptComponentTypes
   vuex?: TypeScriptVuexTypes
   module?: TypescriptVuexModuleTypes
 }
 
 export type State = {
+  logLevel: 'normal' | 'debug' | 'silent'
+  debug: boolean
   isTs: boolean
 }

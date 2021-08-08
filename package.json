@@ -1,13 +1,12 @@
 {
-  "name": "nuxt-gen",
+  "name": "nuxtapose",
   "version": "0.0.1-beta.0",
   "description": "Generate Files For Nuxt Projects",
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "scripts": {
-    "copy-templates": "cp -r src/templates dist/",
-    "build": "tsc && npm run copy-templates",
-    "dev": "npm run build && node dist/index.js",
+    "build": "tsc",
+    "dev": "tsc && node dist/index.js",
     "lint": "eslint --max-warnings 0 'src/**'",
     "prepublishOnly": "npm run build"
   },
@@ -18,10 +17,14 @@
   ],
   "dependencies": {
     "chalk": "^4.1.1",
+    "cli-table": "^0.3.6",
+    "commander": "^8.1.0",
     "figlet": "^1.5.0",
-    "inquirer": "^8.1.2"
+    "inquirer": "^8.1.2",
+    "table": "^6.7.1"
   },
   "devDependencies": {
+    "@types/cli-table": "^0.3.0",
     "@types/figlet": "^1.5.4",
     "@types/inquirer": "^7.3.3",
     "@types/node": "^15.12.4",

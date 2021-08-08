@@ -13,7 +13,10 @@ const moduleTemplate = {
 }
 
 const StoreTemplates: Templates = {
-  [TypeScriptVuexTypes.Module]: moduleTemplate,
+  ts: {
+    [TypeScriptVuexTypes.Module]: moduleTemplate,
+  },
+  js: {},
 }
 
 export default StoreTemplates

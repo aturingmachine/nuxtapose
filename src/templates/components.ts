@@ -24,8 +24,11 @@ const optionsApiTemplate = {
 }
 
 const ComponentTemplates: Templates = {
-  [TypeScriptComponentTypes.ClassBased]: classBasedTemplate,
-  [TypeScriptComponentTypes.OptionsApi]: optionsApiTemplate,
+  ts: {
+    [TypeScriptComponentTypes.ClassBased]: classBasedTemplate,
+    [TypeScriptComponentTypes.OptionsApi]: optionsApiTemplate,
+  },
+  js: {},
 }
 
 export default ComponentTemplates

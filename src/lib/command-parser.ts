@@ -1,9 +1,5 @@
 import { Target } from '../models'
 
-const Commands: Record<string, string[]> = {
-  Generate: ['generate', 'g'],
-}
-
 const TargetOptions: Record<Target, string[]> = {
   Component: ['component', 'c'],
   Service: ['service', 's'],
@@ -24,23 +20,10 @@ export class CommandParser {
 
     if (!target) {
       throw new Error(
-        `${arg} is not a valid command for nuxt-gen. Run nuxtgen help to see available commands.`
+        `${arg} is not a valid command for nuxtapose. Run nuxtapose help to see available commands.`
       )
     }
 
     return target as Target
-  }
-
-  static parseCommand(arg: string): void {
-    const command = Object.entries(Commands)
-      .filter(([_command, matchers]) => matchers.includes(arg))
-      .map(([command, _matchers]) => command)
-      .pop()
-
-    if (!command) {
-      throw new Error(
-        `${arg} is not a valid command for nuxt-gen. Run nuxtgen help to see available commands.`
-      )
-    }
   }
 }

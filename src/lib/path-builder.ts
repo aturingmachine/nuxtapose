@@ -1,7 +1,7 @@
 import { FileExtensions, Target } from '../models'
 import fs from 'fs/promises'
 import path from 'path'
-import { state } from '../config/config-holder'
+import { OptState } from '../config/opt-state'
 
 export class PathBuilder {
   private namePath!: string
@@ -33,7 +33,7 @@ export class PathBuilder {
       return FileExtensions.Vue
     }
 
-    return state.isTs ? FileExtensions.Typescript : FileExtensions.Javascript
+    return OptState.isTs ? FileExtensions.Typescript : FileExtensions.Javascript
   }
 
   private get bottomDir(): string {

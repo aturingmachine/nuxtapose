@@ -41,9 +41,7 @@ const NameRules: Record<Target, NameRule> = {
 }
 
 export function normalizeName(target: Target, name: string): string {
-  console.log('>>>', target)
   const rules = NameRules[target]
-  console.log(rules)
   rules.remove.forEach((removalWord) => name.replaceAll(removalWord, ''))
   return name.concat(rules.suffix)
 }

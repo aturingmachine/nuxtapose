@@ -25,7 +25,10 @@ const moduleTemplate = {
 }
 
 const StoreModulesTemplate: Templates = {
-  [TypescriptVuexModuleTypes.Module]: moduleTemplate,
+  ts: {
+    [TypescriptVuexModuleTypes.Module]: moduleTemplate,
+  },
+  js: {},
 }
 
 export default StoreModulesTemplate
