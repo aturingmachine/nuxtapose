@@ -5,10 +5,10 @@ _nuxtapose is in alpha and may be unstable or changing_
 - [Installation](#installation)
 - [Configuration](#configuration)
   - [Configuration Options](#configuration-fields)
-- [Global CLI Options]()
-  - [Logging Levels]()
+- [Global CLI Options](#global-cli-options)
+  - [Logging Levels](#logging-levels)
 - Commands
-  - [Generate]()
+  - [Generate](#generate-command)
 
 nuxtapose is a cli designed to do the repetitive work of Nuxt development for you.
 
