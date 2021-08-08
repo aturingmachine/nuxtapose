@@ -1,4 +1,3 @@
-import chalk from 'chalk'
 import inquirer from 'inquirer'
 
 export const yesNoPrompt = async (query: string): Promise<boolean> => {
