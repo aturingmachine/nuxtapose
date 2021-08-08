@@ -25,6 +25,10 @@ nuxtapose generate vuex users
 
 ## Installation
 
+```sh
+npm install -g nuxtapose
+```
+
 ## Configuration
 
 nuxtapose can be configured via a `.nuxtaposerc.json` in the projects root directory. nuxtapose will also run a configuration wizard if it is run in a project without a `.nuxtaposerc.json`
