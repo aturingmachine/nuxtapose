@@ -1,6 +1,6 @@
 {
   "name": "nuxtapose",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.0.0.1",
   "description": "Generate Files For Nuxt Projects",
   "main": "dist/index.js",
   "bin": "dist/index.js",
