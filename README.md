@@ -9,6 +9,7 @@ _nuxtapose is in alpha and may be unstable or changing_
   - [Logging Levels](#logging-levels)
 - Commands
   - [Generate](#generate-command)
+- [Roadmap](#roadmap)
 
 nuxtapose is a cli designed to do the repetitive work of Nuxt development for you.
 
@@ -116,3 +117,14 @@ components/
 
 - `--confirm, -c`
   - equivalent to using `"confirmChanges": "all"`
+
+
+## Roadmap
+
+Features that I am hoping to implement in the near future:
+
+- custom templates
+- storybook story templating for components
+- javascript templates
+- middleware templates
+- programmatic API
