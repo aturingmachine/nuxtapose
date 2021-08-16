@@ -3,6 +3,7 @@ dist
 test.js
 nuxt.config.ts
 .nuxtaposerc.json
+.nuxtapose
 
 # command output dirs
 components

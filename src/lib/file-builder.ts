@@ -1,5 +1,5 @@
 import fs from 'fs/promises'
-import { getConfigValue } from '../config/config-holder'
+import { getTemplateOptionFromConfig } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
 import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
 import { normalizeName } from './name-normalizer'
@@ -19,7 +19,7 @@ interface NameCases {
 
 const NameMatchers = {
   pascal: '#[PASCAL_CASE]',
-  kebab: '#[KEBAB_CASE]',
+  kebab: 'NP_KEBAB_CASE',
   sentence: '#[SENTENCE_CASE]',
   raw: '#[RAW_NAME]',
 }
@@ -44,7 +44,7 @@ export class FileBuilder {
   }
 
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
-    const files = this.inject()
+    const files = await this.inject()
 
     Logger.yellow('Creating Implementation Files:')
     const relativePath = path.relative(process.cwd(), newPath)
@@ -76,11 +76,12 @@ export class FileBuilder {
     Logger.green('Spec Files Generated.')
   }
 
-  private inject(): Source {
+  private async inject(): Promise<Source> {
+    const v = await getTemplateOptionFromConfig(this.target.toLowerCase())
     const template =
-      NuxtGenTemplates[this.target][OptState.isTs ? 'ts' : 'js'][
-        getConfigValue(this.target.toLowerCase())
-      ]
+      typeof v === 'string'
+        ? NuxtGenTemplates[this.target][OptState.isTs ? 'ts' : 'js'][v]
+        : v
 
     return {
       implementation: this.replaceAll(template.implementation),

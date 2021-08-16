@@ -32,6 +32,12 @@ export interface Config {
   module?: TypescriptVuexModuleTypes
 }
 
+export const TemplateMap = {
+  component: TypeScriptComponentTypes,
+  vuex: TypeScriptVuexTypes,
+  module: TypescriptVuexModuleTypes,
+}
+
 export type State = {
   logLevel: 'normal' | 'debug' | 'silent'
   debug: boolean

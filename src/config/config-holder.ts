@@ -1,6 +1,7 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { Config } from '../models/config'
+import { Config, TemplateMap } from '../models/config'
+import { Source } from '../templates'
 import { nuxtapose } from '../utils/constants'
 import { Logger } from '../utils/log'
 
@@ -47,7 +48,24 @@ export async function writeConfig(newConfig: Config): Promise<void> {
   config = newConfig
 }
 
-export function getConfigValue(key: string): string {
+function getConfigValue(key: string): string {
   const parsedKey = configAliases[key as keyof typeof configAliases] || key
   return config[parsedKey as keyof Config] || ''
+}
+
+export async function getTemplateOptionFromConfig(
+  key: string
+): Promise<string | Source> {
+  const value = config[key as keyof Config] || ''
+  if (
+    !Object.values(TemplateMap[key as keyof typeof TemplateMap]).includes(value)
+  ) {
+    const customTemplate: Source = await import(
+      path.resolve(__dirname, '../../.nuxtapose', value)
+    )
+
+    return customTemplate
+  } else {
+    return getConfigValue(key)
+  }
 }
