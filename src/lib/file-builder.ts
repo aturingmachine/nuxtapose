@@ -18,10 +18,10 @@ interface NameCases {
 }
 
 const NameMatchers = {
-  pascal: '#[PASCAL_CASE]',
+  pascal: 'NP_PASCAL_CASE',
   kebab: 'NP_KEBAB_CASE',
-  sentence: '#[SENTENCE_CASE]',
-  raw: '#[RAW_NAME]',
+  sentence: 'NP_SENTENCE_CASE',
+  raw: 'NP_RAW_NAME',
 }
 
 export class FileBuilder {
