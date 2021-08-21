@@ -1,3 +1,5 @@
+[![npm version](https://badge.fury.io/js/nuxtapose.svg)](https://badge.fury.io/js/nuxtapose)
+
 # nuxtapose
 
 _nuxtapose is in alpha and may be unstable or changing_
