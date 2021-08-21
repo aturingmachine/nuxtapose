@@ -1,7 +1,9 @@
 import fs from 'fs/promises'
 import path from 'path'
-import { Config } from '../models/config'
+import { Config, TemplateMap } from '../models/config'
+import { Source, SourceFiles } from '../templates'
 import { nuxtapose } from '../utils/constants'
+import { getAllFiles, pathExists } from '../utils/filesystem'
 import { Logger } from '../utils/log'
 
 const configAliases = {
@@ -47,7 +49,66 @@ export async function writeConfig(newConfig: Config): Promise<void> {
   config = newConfig
 }
 
-export function getConfigValue(key: string): string {
+function getConfigValue(key: string): string {
   const parsedKey = configAliases[key as keyof typeof configAliases] || key
   return config[parsedKey as keyof Config] || ''
+}
+
+export async function getTemplateOptionFromConfig(
+  key: string
+): Promise<string | Source> {
+  const value = config[key as keyof Config] || ''
+  if (
+    !Object.values(TemplateMap[key as keyof typeof TemplateMap]).includes(value)
+  ) {
+    const customTemplate: Source = await readCustomTemplate(value)
+
+    return customTemplate
+  } else {
+    return getConfigValue(key)
+  }
+}
+
+async function readCustomTemplate(key: string): Promise<Source> {
+  const customTemplatePath = path.resolve(__dirname, '../../.nuxtapose', key)
+  const resolvedTemplatePath = (await pathExists(customTemplatePath))
+    ? customTemplatePath
+    : customTemplatePath + '.js'
+
+  const isDir = (await fs.stat(resolvedTemplatePath)).isDirectory()
+
+  let customTemplate: Source
+
+  if (isDir) {
+    const i = await buildSourceFiles(
+      path.join(resolvedTemplatePath, 'implementation')
+    )
+    const s = await buildSourceFiles(path.join(resolvedTemplatePath, 'spec'))
+    customTemplate = {
+      implementation: i,
+      spec: s,
+    }
+  } else {
+    customTemplate = await import(resolvedTemplatePath)
+  }
+
+  return customTemplate
+}
+
+async function buildSourceFiles(path: string): Promise<SourceFiles> {
+  const filePaths = await getAllFiles(path, [])
+
+  const a = await Promise.all(
+    filePaths.map(async (filePath) => {
+      const name = filePath.split('/').pop()
+
+      const contents = await fs.readFile(filePath, { encoding: 'utf-8' })
+
+      return [name?.substring(0, name.indexOf('.')), contents]
+    })
+  )
+
+  const parsed: SourceFiles = Object.fromEntries(a)
+
+  return parsed
 }

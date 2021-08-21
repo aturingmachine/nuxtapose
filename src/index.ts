@@ -40,9 +40,10 @@ program
       await writeConfig(newConfig)
     }
   })
-  /**
-   * Generate Command
-   */
+/**
+ * Generate Command
+ */
+program
   .command('generate')
   .alias('g')
   .option('-c, --confirm', 'Ask for confirmation before writing any files.')
@@ -73,6 +74,17 @@ program
   })
   .hook('postAction', () => {
     Reporter.report()
+  })
+/**
+ * Config Wizard Init Command
+ */
+program
+  .command('init')
+  .alias('i')
+  .description('Run the Configuration Wizard')
+  .action(async () => {
+    const newConfig = await configMenu()
+    await writeConfig(newConfig)
   })
 
 program.parseAsync()
