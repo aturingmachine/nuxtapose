@@ -1,7 +1,8 @@
 import { FileExtensions, Target } from '../models'
-import fs from 'fs/promises'
+import fs from 'fs'
 import path from 'path'
 import { OptState } from '../config/opt-state'
+import { Logger } from '../utils/log'
 
 export class PathBuilder {
   private namePath!: string
@@ -21,11 +22,13 @@ export class PathBuilder {
     )
   }
 
-  async buildPath(): Promise<void> {
-    await fs.mkdir(
+  buildPath(): void {
+    Logger.debug.blue(`Running mkdir ${this.outputDir}/${this.bottomDir}`)
+    fs.mkdirSync(
       path.resolve(process.cwd(), `${this.outputDir}/${this.bottomDir}`),
       { recursive: true }
     )
+    Logger.debug.blue(`Directory Created!`)
   }
 
   get extension(): FileExtensions {

@@ -1,7 +1,8 @@
-import fs from 'fs/promises'
+import fs from 'fs'
 import path from 'path'
 import { Config, TemplateMap } from '../models/config'
 import { Source, SourceFiles } from '../templates'
+import { CompatUtils } from '../utils/compat-utils'
 import { nuxtapose } from '../utils/constants'
 import { getAllFiles, pathExists } from '../utils/filesystem'
 import { Logger } from '../utils/log'
@@ -22,7 +23,7 @@ export async function getConfig(): Promise<Config> {
       Logger.debug.yellow(`Reading configuration from ${configPath}`)
 
       config = JSON.parse(
-        await fs.readFile(configPath, {
+        fs.readFileSync(configPath, {
           encoding: 'utf-8',
         })
       )
@@ -42,7 +43,7 @@ export async function getConfig(): Promise<Config> {
 export async function writeConfig(newConfig: Config): Promise<void> {
   Logger.debug.blue(`Writing configuration ${JSON.stringify(newConfig)}`)
 
-  await fs.writeFile(
+  fs.writeFileSync(
     path.resolve(process.cwd(), nuxtapose.configFilename),
     JSON.stringify(newConfig, undefined, 2)
   )
@@ -57,11 +58,14 @@ function getConfigValue(key: string): string {
 export async function getTemplateOptionFromConfig(
   key: string
 ): Promise<string | Source> {
+  Logger.debug.yellow(`Getting Template - ${key}`)
   const value = config[key as keyof Config] || ''
   if (
     !Object.values(TemplateMap[key as keyof typeof TemplateMap]).includes(value)
   ) {
+    Logger.debug.magenta(`Reading custom template ${value}`)
     const customTemplate: Source = await readCustomTemplate(value)
+    Logger.debug.green('Custom Template read!')
 
     return customTemplate
   } else {
@@ -71,19 +75,19 @@ export async function getTemplateOptionFromConfig(
 
 async function readCustomTemplate(key: string): Promise<Source> {
   const customTemplatePath = path.resolve(__dirname, '../../.nuxtapose', key)
-  const resolvedTemplatePath = (await pathExists(customTemplatePath))
+  const resolvedTemplatePath = pathExists(customTemplatePath)
     ? customTemplatePath
     : customTemplatePath + '.js'
 
-  const isDir = (await fs.stat(resolvedTemplatePath)).isDirectory()
+  const isDir = fs.statSync(resolvedTemplatePath).isDirectory()
 
   let customTemplate: Source
 
   if (isDir) {
-    const i = await buildSourceFiles(
+    const i = buildSourceFiles(
       path.join(resolvedTemplatePath, 'implementation')
     )
-    const s = await buildSourceFiles(path.join(resolvedTemplatePath, 'spec'))
+    const s = buildSourceFiles(path.join(resolvedTemplatePath, 'spec'))
     customTemplate = {
       implementation: i,
       spec: s,
@@ -95,20 +99,18 @@ async function readCustomTemplate(key: string): Promise<Source> {
   return customTemplate
 }
 
-async function buildSourceFiles(path: string): Promise<SourceFiles> {
-  const filePaths = await getAllFiles(path, [])
+function buildSourceFiles(path: string): SourceFiles {
+  const filePaths = getAllFiles(path, [])
 
-  const a = await Promise.all(
-    filePaths.map(async (filePath) => {
-      const name = filePath.split('/').pop()
+  const rawSources = filePaths.map((filePath) => {
+    const name = filePath.split('/').pop()
 
-      const contents = await fs.readFile(filePath, { encoding: 'utf-8' })
+    const contents = fs.readFileSync(filePath, { encoding: 'utf-8' })
 
-      return [name?.substring(0, name.indexOf('.')), contents]
-    })
-  )
+    return [name ? name.substring(0, name.indexOf('.')) : '', contents]
+  })
 
-  const parsed: SourceFiles = Object.fromEntries(a)
+  const parsed: SourceFiles = CompatUtils.Object.fromEntries(rawSources)
 
   return parsed
 }

@@ -1,4 +1,5 @@
 import { Target } from '../models'
+import { CompatUtils } from '../utils/compat-utils'
 
 type NameRule = {
   suffix: string
@@ -42,7 +43,9 @@ const NameRules: Record<Target, NameRule> = {
 
 export function normalizeName(target: Target, name: string): string {
   const rules = NameRules[target]
-  rules.remove.forEach((removalWord) => name.replaceAll(removalWord, ''))
+  rules.remove.forEach((removalWord) =>
+    CompatUtils.String.replaceAll(name, removalWord, '')
+  )
   return name.concat(rules.suffix)
 }
 
@@ -74,7 +77,7 @@ export class Name {
   private static removeBannedStrings(source: string): string {
     let s = source
     Name.rules.remove.forEach(
-      (removalWord) => (s = s.replaceAll(removalWord, ''))
+      (removalWord) => (s = CompatUtils.String.replaceAll(s, removalWord, ''))
     )
 
     return s

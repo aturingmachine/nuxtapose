@@ -1,33 +1,34 @@
-import { readdir, stat, access } from 'fs/promises'
+import { accessSync, readdirSync, statSync } from 'fs'
 import path from 'path'
 
-export const pathExists = async (path: string): Promise<boolean> => {
+export const pathExists = (path: string): boolean => {
   try {
-    await access(path)
+    accessSync(path)
     return true
   } catch (error) {
     return false
   }
 }
 
-export const getAllFiles = async (
+export const getAllFiles = (
   dirPath: string,
   arrayOfFiles: string[]
-): Promise<string[]> => {
-  const files = await readdir(dirPath, { withFileTypes: false })
+): string[] => {
+  const files = readdirSync(dirPath, {
+    withFileTypes: false,
+    encoding: 'utf-8',
+  })
   console.log(files)
 
   let filesCopy = [...arrayOfFiles]
 
-  await Promise.all(
-    files.map(async (file) => {
-      if ((await stat(dirPath + '/' + file)).isDirectory()) {
-        filesCopy = await getAllFiles(dirPath + '/' + file, arrayOfFiles)
-      } else {
-        filesCopy.push(path.join(dirPath, '/', file))
-      }
-    })
-  )
+  files.forEach((file) => {
+    if (statSync(dirPath + '/' + file).isDirectory()) {
+      filesCopy = getAllFiles(dirPath + '/' + file, arrayOfFiles)
+    } else {
+      filesCopy.push(path.join(dirPath, '/', file))
+    }
+  })
 
   return filesCopy
 }
