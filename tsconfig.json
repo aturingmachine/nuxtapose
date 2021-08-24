@@ -6,7 +6,7 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["ESNext"],
+    "lib": ["ES2015"],
     "outDir": "dist",
     "types": ["node"],
     "forceConsistentCasingInFileNames": true,

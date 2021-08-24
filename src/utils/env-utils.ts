@@ -1,9 +1,9 @@
-import fs from 'fs/promises'
+import fs from 'fs'
 import { OptState } from '../config/opt-state'
 import { Logger } from './log'
 
 export async function checkForNuxt(): Promise<void> {
-  const dirEnts = await fs.readdir(process.cwd(), { withFileTypes: true })
+  const dirEnts = fs.readdirSync(process.cwd(), { withFileTypes: true })
 
   const hasNuxtConfig = dirEnts.some((dirEnt) => {
     if (dirEnt.name === 'nuxt.config.ts') {

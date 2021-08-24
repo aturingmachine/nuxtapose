@@ -24,7 +24,7 @@ export class Generator {
   }
 
   async generateFiles(): Promise<void> {
-    await this.pathBuilder.buildPath()
+    this.pathBuilder.buildPath()
 
     await this.fileBuilder.writeFiles(
       this.pathBuilder.path,

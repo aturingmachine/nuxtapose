@@ -1,4 +1,4 @@
-import fs from 'fs/promises'
+import fs from 'fs'
 import { getTemplateOptionFromConfig } from '../config/config-holder'
 import { FileExtensions, Target } from '../models'
 import NuxtGenTemplates, { Source, SourceFiles } from '../templates'
@@ -9,6 +9,7 @@ import { yesNoPrompt } from '../utils/input-utils'
 import chalk from 'chalk'
 import { NuxtaposeEvent, NuxtaposeEventType } from './reporter'
 import { OptState } from '../config/opt-state'
+import { CompatUtils } from '../utils/compat-utils'
 
 interface NameCases {
   pascal: string
@@ -44,6 +45,7 @@ export class FileBuilder {
   }
 
   async writeFiles(newPath: string, extension: FileExtensions): Promise<void> {
+    Logger.debug.magenta('Preparing to Write Files!')
     const files = await this.inject()
 
     Logger.yellow('Creating Implementation Files:')
@@ -78,6 +80,8 @@ export class FileBuilder {
 
   private async inject(): Promise<Source> {
     const v = await getTemplateOptionFromConfig(this.target.toLowerCase())
+    Logger.debug.green('Config Read')
+
     const template =
       typeof v === 'string'
         ? NuxtGenTemplates[this.target][OptState.isTs ? 'ts' : 'js'][v]
@@ -99,12 +103,16 @@ export class FileBuilder {
   }
 
   private replaceAll(contents: SourceFiles): SourceFiles {
-    return Object.fromEntries(
+    return CompatUtils.Object.fromEntries(
       Object.entries(contents).map(([fileName, sourceCode]) => {
         return [
-          fileName.replaceAll(NameMatchers.kebab, this.names.kebab),
+          CompatUtils.String.replaceAll(
+            fileName,
+            NameMatchers.kebab,
+            this.names.kebab
+          ),
           this.replaceMap.reduce((prev, curr) => {
-            return prev.replaceAll(curr[0], curr[1])
+            return CompatUtils.String.replaceAll(prev, curr[0], curr[1])
           }, sourceCode),
         ]
       })
@@ -121,7 +129,7 @@ export class FileBuilder {
     Logger.blue(chalk.bold(` > ${friendlyPath}`))
 
     try {
-      await fs.stat(fullPath)
+      fs.statSync(fullPath)
       event.type = NuxtaposeEventType.Overwrite
 
       const overwrite =
@@ -131,7 +139,7 @@ export class FileBuilder {
       if (overwrite) {
         event.complete()
 
-        return fs.writeFile(fullPath, source, {
+        return fs.writeFileSync(fullPath, source, {
           encoding: 'utf-8',
         })
       } else {
@@ -145,7 +153,7 @@ export class FileBuilder {
         (await yesNoPrompt(`Write file ${friendlyPath}?`))
       ) {
         event.complete()
-        return fs.writeFile(fullPath, source, {
+        return fs.writeFileSync(fullPath, source, {
           encoding: 'utf-8',
         })
       } else {
