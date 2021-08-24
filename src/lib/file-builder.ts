@@ -139,7 +139,7 @@ export class FileBuilder {
       if (overwrite) {
         event.complete()
 
-        return fs.writeFileSync(fullPath, source, {
+        fs.writeFileSync(fullPath, source, {
           encoding: 'utf-8',
         })
       } else {
@@ -153,7 +153,7 @@ export class FileBuilder {
         (await yesNoPrompt(`Write file ${friendlyPath}?`))
       ) {
         event.complete()
-        return fs.writeFileSync(fullPath, source, {
+        fs.writeFileSync(fullPath, source, {
           encoding: 'utf-8',
         })
       } else {
