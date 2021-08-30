@@ -1,14 +1,22 @@
 {
-  "include": ["src/**/*", "src/**/*.txt"],
+  "include": [
+    "src/**/*",
+    "src/**/*.txt"
+  ],
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "ES2015",
     "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["ES2015"],
+    "lib": [
+      "ES2015"
+    ],
     "outDir": "dist",
-    "types": ["node", "jest"],
+    "types": [
+      "node",
+      "jest"
+    ],
     "forceConsistentCasingInFileNames": true,
   },
 }

@@ -51,16 +51,20 @@ export async function writeConfig(newConfig: Config): Promise<void> {
 }
 
 function getConfigValue(key: string): string {
-  const parsedKey = configAliases[key as keyof typeof configAliases] || key
-  return config[parsedKey as keyof Config] || ''
+  return (
+    config[key as keyof Config] ||
+    config[configAliases[key as keyof typeof configAliases] as keyof Config] ||
+    ''
+  )
 }
 
 export async function getTemplateOptionFromConfig(
   key: string
 ): Promise<string | Source> {
   Logger.debug.yellow(`Getting Template - ${key}`)
-  const value = config[key as keyof Config] || ''
+  const value = getConfigValue(key)
   if (
+    TemplateMap[key as keyof typeof TemplateMap] &&
     !Object.values(TemplateMap[key as keyof typeof TemplateMap]).includes(value)
   ) {
     Logger.debug.magenta(`Reading custom template ${value}`)
@@ -69,6 +73,8 @@ export async function getTemplateOptionFromConfig(
 
     return customTemplate
   } else {
+    Logger.debug.yellow(`Reading built in template - ${key}`)
+
     return getConfigValue(key)
   }
 }

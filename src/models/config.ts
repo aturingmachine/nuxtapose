@@ -34,6 +34,8 @@ export interface Config {
 
 export const TemplateMap = {
   component: TypeScriptComponentTypes,
+  page: TypeScriptComponentTypes,
+  layout: TypeScriptComponentTypes,
   vuex: TypeScriptVuexTypes,
   module: TypescriptVuexModuleTypes,
 }
