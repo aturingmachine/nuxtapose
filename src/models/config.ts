@@ -30,6 +30,7 @@ export interface Config {
   component?: TypeScriptComponentTypes
   vuex?: TypeScriptVuexTypes
   module?: TypescriptVuexModuleTypes
+  srcDir?: string
 }
 
 export const TemplateMap = {

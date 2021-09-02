@@ -29,12 +29,15 @@ program
     Logger.debug.log('Checking for Nuxt...')
     await checkForNuxt()
   })
-  .hook('preAction', async () => {
+  .hook('preAction', async (thisCommand, actionCommand) => {
     Logger.debug.log('Reading nuxtapose Configuration')
     const config = await getConfig()
     OptState.parseConfig(config)
 
-    if (!Object.keys(config).length) {
+    if (
+      !Object.keys(config).length &&
+      !actionCommand.parent?.args.includes('init')
+    ) {
       Logger.debug.yellow('No config loaded! Running setup wizard...')
       const newConfig = await configMenu()
       await writeConfig(newConfig)

@@ -50,7 +50,7 @@ export async function writeConfig(newConfig: Config): Promise<void> {
   config = newConfig
 }
 
-function getConfigValue(key: string): string {
+export function getConfigValue(key: string): string {
   return (
     config[key as keyof Config] ||
     config[configAliases[key as keyof typeof configAliases] as keyof Config] ||
