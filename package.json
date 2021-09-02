@@ -1,6 +1,6 @@
 {
   "name": "nuxtapose",
-  "version": "0.0.1-beta.0.1.4",
+  "version": "0.0.1-beta.0.1.5",
   "description": "Generate Files For Nuxt Projects",
   "keywords": [
     "nuxt",
@@ -20,8 +20,9 @@
   "main": "dist/index.js",
   "bin": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc && node dist/index.js",
+    "build": "sh ./scripts/build.sh",
+    "compile": "tsc",
+    "dev": "npm run compile && node dist/index.js",
     "lint": "eslint --max-warnings 0 'src/**'",
     "lint:fix": "eslint --fix --max-warnings 0 'src/**'",
     "test": "jest",

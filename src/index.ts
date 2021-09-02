@@ -17,7 +17,7 @@ const program = new Command()
 
 program
   .name('nuxtapose')
-  .version(process.env.npm_package_version || '0.0.1-beta.0.x.x')
+  .version('NP_VERSION_NUMBER')
   .addHelpText('beforeAll', banner)
   .hook('preAction', () => console.log(banner))
   .option('-d, --debug', 'Increase logging verbosity')
