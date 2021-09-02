@@ -75,12 +75,14 @@ export async function configMenu(): Promise<Config> {
 
   const srcDir =
     (await readNuxtConfig()) ||
-    (await inquirer.prompt({
-      type: 'input',
-      name: 'srcDir',
-      message:
-        "Do you use a srcDir property in your Nuxt configuration?\n(it seems you don't but we want to be sure)\n",
-    }))
+    (
+      await inquirer.prompt({
+        type: 'input',
+        name: 'srcDir',
+        message:
+          "Do you use a srcDir property in your Nuxt configuration?\n(it seems you don't but we want to be sure)\n",
+      })
+    ).srcDir
 
   return { ...componentType, ...vuexType, ...configConstants, srcDir } as Config
 }
