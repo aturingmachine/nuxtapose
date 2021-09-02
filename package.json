@@ -22,7 +22,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc && node dist/index.js",
-    "lint": "eslint --fix --max-warnings 0 'src/**'",
+    "lint": "eslint --max-warnings 0 'src/**'",
+    "lint:fix": "eslint --fix --max-warnings 0 'src/**'",
     "test": "jest",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
