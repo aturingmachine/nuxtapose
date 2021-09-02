@@ -8,6 +8,8 @@ tags:
 ---
 # Configuration
 
+> Check the [Configuration Glossary](./config-glossary.md) for all supported configuration options.
+
 The behavior of nuxtapose can be controlled via the `.nuxtaposerc.json`
 
 ## Example Config
@@ -18,9 +20,18 @@ The behavior of nuxtapose can be controlled via the `.nuxtaposerc.json`
   "vuex": "modules",
   "module": "modules",
   "confirmChanges": "overwrite-only",
-  "reportLevel": "none"
+  "reportLevel": "none",
+  "srcDir": "src/"
 }
 ```
+
+## General Configuration
+
+### Source Directory
+
+If your project makes use of [Nuxt's `srcDir`](https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-srcdir) option, set the `srcDir` configuration option to the same value. 
+
+nuxtapose will do it's best to determine this value automatically when running the configuration wizard.s
 
 ## Template Configuration
 
