@@ -3,6 +3,7 @@ import fs from 'fs'
 import path from 'path'
 import { OptState } from '../config/opt-state'
 import { Logger } from '../utils/log'
+import { getConfigValue } from '../config/config-holder'
 
 export class PathBuilder {
   private namePath!: string
@@ -18,16 +19,15 @@ export class PathBuilder {
   get path(): string {
     return path.resolve(
       process.cwd(),
-      path.join(this.outputDir, this.bottomDir)
+      path.join(this.srcDir, this.outputDir, this.bottomDir)
     )
   }
 
   buildPath(): void {
-    Logger.debug.blue(`Running mkdir ${this.outputDir}/${this.bottomDir}`)
-    fs.mkdirSync(
-      path.resolve(process.cwd(), `${this.outputDir}/${this.bottomDir}`),
-      { recursive: true }
-    )
+    Logger.debug.blue(`Running mkdir ${this.path}`)
+    fs.mkdirSync(path.resolve(process.cwd(), `${this.path}`), {
+      recursive: true,
+    })
     Logger.debug.blue(`Directory Created!`)
   }
 
@@ -37,6 +37,10 @@ export class PathBuilder {
     }
 
     return OptState.isTs ? FileExtensions.Typescript : FileExtensions.Javascript
+  }
+
+  private get srcDir(): string {
+    return getConfigValue('srcDir') || ''
   }
 
   private get bottomDir(): string {

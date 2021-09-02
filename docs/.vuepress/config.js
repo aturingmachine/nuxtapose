@@ -7,6 +7,7 @@ module.exports = {
       { text: 'Guide', link: '/getting-started' },
       { text: 'Config', link: '/config' },
       { text: 'API', items: [
+        { text: 'Configuration Glossary', link: '/config-glossary' },
         { text: 'Commands', link: '/commands' },
         { text: 'Options', link: '/options' },
         { text: 'Custom Templates', link: '/custom-templates' },
