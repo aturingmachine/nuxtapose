@@ -31,7 +31,7 @@ The behavior of nuxtapose can be controlled via the `.nuxtaposerc.json`
 
 If your project makes use of [Nuxt's `srcDir`](https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-srcdir) option, set the `srcDir` configuration option to the same value. 
 
-nuxtapose will do it's best to determine this value automatically when running the configuration wizard.s
+nuxtapose will do it's best to determine this value automatically when running the configuration wizard.
 
 ## Template Configuration
 

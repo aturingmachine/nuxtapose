@@ -29,7 +29,7 @@ program
     Logger.debug.log('Checking for Nuxt...')
     await checkForNuxt()
   })
-  .hook('preAction', async (thisCommand, actionCommand) => {
+  .hook('preAction', async (_thisCommand, actionCommand) => {
     Logger.debug.log('Reading nuxtapose Configuration')
     const config = await getConfig()
     OptState.parseConfig(config)

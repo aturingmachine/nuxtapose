@@ -3,6 +3,7 @@ import { Config } from '../models/config'
 import { pathExists } from '../utils/filesystem'
 import path from 'path'
 import { readFileSync } from 'fs'
+import { Logger } from '../utils/log'
 
 const configConstants = {
   module: 'modules',
@@ -18,19 +19,23 @@ function extractSrcDir(rawContents: string): string | undefined {
 }
 
 async function readNuxtConfig(): Promise<string | undefined> {
+  Logger.debug.blue('Attempting to determine srcDir...')
   if (pathExists(path.resolve(__dirname, '../../nuxt.config.ts'))) {
+    Logger.debug.green('Found TypeScript config file')
     const raw = readFileSync(path.resolve(__dirname, '../../nuxt.config.ts'), {
       encoding: 'utf-8',
     })
 
     return extractSrcDir(raw)
   } else if (pathExists(path.resolve(__dirname, '../../nuxt.config.js'))) {
+    Logger.debug.green('Found JavaScript config file')
     const raw = readFileSync(path.resolve(__dirname, '../../nuxt.config.js'), {
       encoding: 'utf-8',
     })
 
     return extractSrcDir(raw)
   } else {
+    Logger.debug.magenta('No config file found...')
     return undefined
   }
 }
